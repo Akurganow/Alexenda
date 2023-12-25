@@ -18,32 +18,32 @@ const tasksReducer = (initialState: TasksState) => createReducer(initialState, b
 			state.newTask = action.payload
 		})
 		.addCase(addTask, (state, action) => {
-			const highestCount = state.tasks.reduce((acc, task) => Math.max(acc, task.count), 0)
+			const highestCount = state.items.reduce((acc, task) => Math.max(acc, task.count), 0)
 
-			state.tasks.push({
+			state.items.push({
 				...action.payload,
 				count: highestCount + 1,
 			})
 		})
 		.addCase(removeTask, (state, action) => {
-			state.tasks = state.tasks.filter(task => task.id !== action.payload)
+			state.items = state.items.filter(task => task.id !== action.payload)
 		})
 		.addCase(updateTask, (state, action) => {
-			const task = state.tasks.find(task => task.id === action.payload.id)
+			const task = state.items.find(task => task.id === action.payload.id)
 
 			if (task) {
 				Object.assign(task, action.payload)
 			}
 		})
 		.addCase(updateChecklistItem, (state, action) => {
-			const task = state.tasks.find(task => task.id === action.payload.taskId)
+			const task = state.items.find(task => task.id === action.payload.taskId)
 
 			if (task) {
 				task.checklist = (task.checklist || []).map(item => item.id === action.payload.item.id ? action.payload.item : item)
 			}
 		})
 		.addCase(addChecklistItem, (state, action) => {
-			const task = state.tasks.find(task => task.id === action.payload)
+			const task = state.items.find(task => task.id === action.payload)
 
 			if (task) {
 				task.checklist = [...(task.checklist || []), {
@@ -54,15 +54,15 @@ const tasksReducer = (initialState: TasksState) => createReducer(initialState, b
 			}
 		})
 		.addCase(removeChecklistItem, (state, action) => {
-			const task = state.tasks.find(task => task.id === action.payload.taskId)
+			const task = state.items.find(task => task.id === action.payload.taskId)
 
 			if (task) {
 				task.checklist = (task.checklist || []).filter(item => item.id !== action.payload.itemId)
 			}
 		})
 		.addCase(importTasks, (state, action) => {
-			state.tasks = [
-				...state.tasks.filter(task => !action.payload.find(t => t.id === task.id)),
+			state.items = [
+				...state.items.filter(task => !action.payload.find(t => t.id === task.id)),
 				...action.payload,
 			]
 		})
@@ -94,17 +94,17 @@ function performTasksSync(state: WritableDraft<TasksState>, { payload }: { paylo
 	const { diff, lastServerUpdate } = payload
 
 	if (diff?.create && diff.create.length > 0) {
-		const tasksMap = new Map(state.tasks.map(task => [task.id, task]))
+		const tasksMap = new Map(state.items.map(task => [task.id, task]))
 
 		for (const task of diff.create) {
 			tasksMap.set(task.id, task)
 		}
 
-		state.tasks = Array.from(tasksMap.values())
+		state.items = Array.from(tasksMap.values())
 	}
 
 	for (const task of (diff?.update || [])) {
-		state.tasks = state.tasks
+		state.items = state.items
 			.map(t =>
 				t.id === task.id
 					? { ...t, ...task } as Task
@@ -113,7 +113,7 @@ function performTasksSync(state: WritableDraft<TasksState>, { payload }: { paylo
 	}
 
 	if (diff?.delete && diff.delete.length > 0) {
-		state.tasks = state.tasks.filter(task => !diff.delete!.includes(task.id))
+		state.items = state.items.filter(task => !diff.delete!.includes(task.id))
 	}
 
 	state.lastServerUpdate = lastServerUpdate?.toString()

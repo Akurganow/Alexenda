@@ -5,7 +5,7 @@ import i18n from 'src/i18n'
 export const storeKey = 'tags'
 
 export const initialState: TagsState = {
-	tags: []
+	items: []
 }
 export const TAGS_MODAL_NAME = 'tags'
 export const INITIAL_TAG_FORM: Omit<Tag, 'id'> = {

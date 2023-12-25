@@ -6,7 +6,7 @@ import { PersistPartial } from 'store/types'
 const tasks: MigrationManifest = {
 	1: (state: PersistPartial<TasksState>) => ({
 		...state,
-		tasks: state.tasks.map(task => ({
+		tasks: state.items.map(task => ({
 			...task,
 			count: parseInt(task.id),
 			id: nanoid(),
@@ -14,7 +14,7 @@ const tasks: MigrationManifest = {
 	}),
 	2: (state: PersistPartial<TasksState>) => ({
 		...state,
-		tasks: state.tasks.map(task => ({
+		tasks: state.items.map(task => ({
 			...task,
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error
@@ -23,13 +23,17 @@ const tasks: MigrationManifest = {
 	}),
 	3: (state: PersistPartial<TasksState>) => ({
 		...state,
-		tasks: state.tasks.map(task => ({
+		tasks: state.items.map(task => ({
 			...task,
 			checkList: undefined
 		}))
 	}),
+	4: (state: PersistPartial<TasksState>) => ({
+		...state,
+		items: (state as unknown as { tasks: TasksState['items'] }).tasks,
+	}),
 }
 
-export const tasksVersion = 3
+export const version = 4
 
 export default tasks

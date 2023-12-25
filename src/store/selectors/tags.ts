@@ -11,7 +11,7 @@ const rawTags = (state: RootState) => state[storeKey]
 
 export const selectedTags = createSelector(
 	rawTags,
-	(state) => state.tags
+	(state) => state.items
 )
 
 export const selectedAllTags = createSelector(

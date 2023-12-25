@@ -61,7 +61,7 @@ export type NewTaskValues = Partial<Omit<Task, 'checklist'>> & {
 }
 
 export type TasksState = {
-    tasks: Task[]
+    items: Task[]
     newTask: NewTaskValues | null
     lastServerUpdate?: string
     isSyncing?: boolean

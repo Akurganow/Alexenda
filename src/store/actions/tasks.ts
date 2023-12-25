@@ -1,11 +1,12 @@
 import { storeKey } from 'store/constants/tasks'
 import { actionCreatorFactory, thunkCreatorFactory } from 'store/helpers/actions'
 import { performClientDiff } from 'lib/tasks/server'
+import { createLogStorage } from 'lib/syncLog/storages'
+import syncer from 'store/syncer.config'
 import type { CheckListItem, NewTaskValues, Task, TaskDiff, TasksState } from 'types/tasks'
 import type { RootState } from 'store/types'
-import { createLogStorage } from 'lib/syncLog/storages'
-import { SyncPayload } from 'lib/syncLog/types'
-import { PartialWithId } from 'types/common'
+import type { SyncPayload } from 'lib/syncLog/types'
+import type { PartialWithId } from 'types/common'
 
 const createAction = actionCreatorFactory(storeKey)
 const createThunk = thunkCreatorFactory(storeKey)
@@ -23,7 +24,7 @@ export const initialSyncTasksWithServer = createThunk(
 	'INITIAL_SYNC_WITH_SERVER',
 	(_, api) => {
 		const state = api.getState() as RootState
-		return initialSync(state.tasks)
+		return syncer.initialSync(state, 'task')
 	}
 )
 export const syncTasksWithServer = createThunk<
@@ -32,10 +33,11 @@ export const syncTasksWithServer = createThunk<
 	'SYNC_WITH_SERVER',
 	(_, api) => {
 		const state = api.getState() as RootState
-		return startSync(state.tasks)
+		return syncer.sync(state, 'task')
 	},
 )
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function initialSync(state: TasksState): Promise<{ diff?: TaskDiff, lastServerUpdate?: Date }> {
 	const lastServerUpdate = state.lastServerUpdate ? new Date(state.lastServerUpdate) : undefined
 
@@ -44,7 +46,7 @@ async function initialSync(state: TasksState): Promise<{ diff?: TaskDiff, lastSe
 			method: 'POST',
 			next: { revalidate: 360 },
 			body: JSON.stringify({
-				tasks: state.tasks,
+				tasks: state.items,
 				lastServerUpdate: lastServerUpdate || new Date(0)
 			}),
 			headers: {
@@ -60,6 +62,7 @@ async function initialSync(state: TasksState): Promise<{ diff?: TaskDiff, lastSe
 	return {}
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function startSync(state: TasksState): Promise<{ diff?: TaskDiff, lastServerUpdate?: Date }> {
 	const lastServerUpdate = state.lastServerUpdate ? new Date(state.lastServerUpdate) : undefined
 

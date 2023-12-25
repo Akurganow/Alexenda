@@ -21,7 +21,7 @@ const config = createSyncConfig<Task>(builder => builder
 		deleted: payload
 	}))
 	.case(addChecklistItem, ({ payload }, state) => {
-		const task = state.tasks.tasks.find(task => task.id === payload)
+		const task = state.tasks.items.find(task => task.id === payload)
 
 		if (task) {
 			return {
@@ -39,7 +39,7 @@ const config = createSyncConfig<Task>(builder => builder
 		return {}
 	})
 	.case(updateChecklistItem, ({ payload }, state) => {
-		const task = state.tasks.tasks.find(task => task.id === payload.taskId)
+		const task = state.tasks.items.find(task => task.id === payload.taskId)
 
 		if (task) {
 			return {
@@ -53,7 +53,7 @@ const config = createSyncConfig<Task>(builder => builder
 		return {}
 	})
 	.case(removeChecklistItem, ({ payload }, state) => {
-		const task = state.tasks.tasks.find(task => task.id === payload.taskId)
+		const task = state.tasks.items.find(task => task.id === payload.taskId)
 
 		if (task) {
 			return {

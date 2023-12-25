@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import type { Prisma } from '@prisma/client'
 
-type ModelNames = Prisma.ModelName; // "User" | "Post"
+type ModelNames = Prisma.ModelName
 
 export type PrismaModels = {
     [M in ModelNames]: Exclude<

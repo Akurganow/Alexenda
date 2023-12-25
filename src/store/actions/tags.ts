@@ -1,9 +1,10 @@
 import { storeKey } from 'store/constants/tags'
 import { actionCreatorFactory, thunkCreatorFactory } from 'store/helpers/actions'
 import { performClientDiff } from 'lib/tags/server'
+import { createLogStorage } from 'lib/syncLog/storages'
+import syncer from 'store/syncer.config'
 import { Tag, TagDiff, TagsState } from 'types/tags'
 import { RootState } from 'store/types'
-import { createLogStorage } from 'lib/syncLog/storages'
 import { SyncPayload } from 'lib/syncLog/types'
 
 const createAction = actionCreatorFactory(storeKey)
@@ -16,24 +17,25 @@ export const initialSyncTagsWithServer = createThunk(
 	'INITIAL_SYNC_WITH_SERVER',
 	(_, api) => {
 		const state = api.getState() as RootState
-		return initialSync(state.tags)
+		return syncer.initialSync(state, 'tag')
 	},
 )
 export const syncTagsWithServer = createThunk(
 	'SYNC_WITH_SERVER',
 	(_, api) => {
 		const state = api.getState() as RootState
-		return startSync(state.tags)
+		return syncer.sync(state, 'tag')
 	},
 )
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function initialSync(state: TagsState) {
 	try {
 		const response = await fetch('/api/sync/tags', {
 			method: 'POST',
 			next: { revalidate: 360 },
 			body: JSON.stringify({
-				tags: state.tags,
+				tags: state.items,
 				lastServerUpdate: state.lastServerUpdate || new Date(0)
 			}),
 			headers: {
@@ -49,6 +51,7 @@ async function initialSync(state: TagsState) {
 	return {}
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function startSync(state: TagsState) {
 	const lastServerUpdate = state.lastServerUpdate ? new Date(state.lastServerUpdate) : undefined
 

@@ -16,7 +16,7 @@ export interface TagForm extends Omit<Tag, 'id' | 'color'> {
 }
 
 export type TagsState = {
-    tags: Tag[]
+    items: Tag[]
     lastServerUpdate?: string
     isSyncing?: boolean
 }

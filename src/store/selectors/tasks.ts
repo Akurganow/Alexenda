@@ -13,7 +13,7 @@ dayjs.extend(minMax)
 const rawSelectedTasks = (state: RootState) => state[storeKey]
 export const selectedTasks = createSelector(
 	rawSelectedTasks,
-	(state) => state.tasks
+	(state) => state.items
 )
 export const selectedLastServerUpdate = createSelector(
 	rawSelectedTasks,

@@ -7,7 +7,7 @@ import { TasksState } from 'types/tasks'
 export const storeKey = 'tasks'
 
 export const initialState: TasksState = {
-	tasks: [],
+	items: [],
 	newTask: null,
 }
 
